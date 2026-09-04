@@ -1,58 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Image Caption Generator</title>
+    <title>Visionary AI | Image Caption Generator</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <div class="container">
+    <!-- Animated background -->
+    <div class="background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
-        <h1>AI Image Caption Generator</h1>
 
-        <p class="subtitle">
-            Upload an image and let AI generate a caption for it.
-        </p>
+    <main class="page">
 
-        <form action="/generate" method="POST" enctype="multipart/form-data">
+        <!-- =================================================
+             HERO
+        ================================================== -->
 
-            <div class="upload-box">
-                <input type="file" name="image" accept="image/*" required>
+        <header class="hero">
+
+            <div class="mini-label">
+                IMAGE UNDERSTANDING
             </div>
 
-            <button type="submit">
-                Generate Caption
-            </button>
+            <h1>
+                Turn Images Into
+                <span>Words.</span>
+            </h1>
 
-        </form>
+            <p>
+                Upload an image and let our deep learning model
+                understand and describe what it sees.
+            </p>
 
-        {% if image %}
+        </header>
 
-            <div class="result">
 
-                <h2>Uploaded Image</h2>
+        <!-- =================================================
+             UPLOAD CARD
+        ================================================== -->
 
-                <img
-                    src="{{ url_for('static', filename='uploads/' + image) }}"
-                    alt="Uploaded Image"
-                >
+        <section class="upload-card">
 
-                <h2>Generated Caption</h2>
+            <div class="card-header">
 
-                <p class="caption">
-                    {{ caption }}
-                </p>
+                <div>
+                    <span class="section-label">
+                        STEP 01
+                    </span>
+
+                    <h2>
+                        Upload your image
+                    </h2>
+                </div>
+
+                <div class="header-icon">
+                    ✦
+                </div>
 
             </div>
+
+
+            <form method="POST"
+                  enctype="multipart/form-data"
+                  id="uploadForm">
+
+
+                <!-- DROP ZONE -->
+
+                <div class="drop-zone"
+                     id="dropZone">
+
+
+                    <!-- Upload Content -->
+
+                    <div class="upload-content"
+                         id="uploadContent">
+
+                        <div class="upload-icon">
+
+                            <span>
+                                ↑
+                            </span>
+
+                        </div>
+
+
+                        <h3>
+                            Drop your image here
+                        </h3>
+
+
+                        <p>
+                            or click anywhere to browse
+                        </p>
+
+
+                        <div class="supported-files">
+
+                            JPG
+                            <span>•</span>
+
+                            JPEG
+                            <span>•</span>
+
+                            PNG
+                            <span>•</span>
+
+                            WEBP
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- IMAGE PREVIEW -->
+
+                    <div class="preview-container"
+                         id="previewContainer">
+
+                        <img id="imagePreview"
+                             src=""
+                             alt="Image preview">
+
+
+                        <button
+                            type="button"
+                            class="remove-image"
+                            id="removeImage">
+
+                            ×
+
+                        </button>
+
+                    </div>
+
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        name="image"
+                        accept="image/*"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Selected file -->
+
+                <div class="selected-file"
+                     id="fileName">
+
+                    No image selected
+
+                </div>
+
+
+                <!-- Generate button -->
+
+                <button
+                    type="submit"
+                    class="generate-btn"
+                    id="generateBtn">
+
+                    <span class="generate-icon">
+                        ✦
+                    </span>
+
+                    <span class="generate-text">
+                        Generate Caption
+                    </span>
+
+                    <span class="generate-arrow">
+                        →
+                    </span>
+
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- =================================================
+             ERROR MESSAGE
+        ================================================== -->
+
+        {% if error %}
+
+        <div class="error-message">
+
+            <div class="error-icon">
+                !
+            </div>
+
+            <span>
+                {{ error }}
+            </span>
+
+        </div>
 
         {% endif %}
 
-    </div>
+
+        <!-- =================================================
+             RESULT CARD
+        ================================================== -->
+
+        {% if image_path %}
+
+        <section class="result-card">
+
+
+            <!-- Result Header -->
+
+            <div class="result-header">
+
+                <div>
+
+                    <span class="section-label">
+                        STEP 02
+                    </span>
+
+                    <h2>
+                        AI Analysis
+                    </h2>
+
+                </div>
+
+
+                <div class="analysis-status">
+
+                    <span class="status-dot"></span>
+
+                    Analysis complete
+
+                </div>
+
+            </div>
+
+
+            <!-- IMAGE -->
+
+            <div class="image-wrapper">
+
+                <img
+                    src="{{ image_path }}"
+                    alt="Uploaded image"
+                >
+
+                <div class="image-tag">
+                    IMAGE INPUT
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CAPTION
+            ================================================== -->
+
+            <div class="caption-section">
+
+                <span class="section-label">
+                    GENERATED DESCRIPTION
+                </span>
+
+
+                <div class="caption-box">
+
+                    <div class="quote quote-left">
+                        “
+                    </div>
+
+
+                    <p id="caption">
+                        {{ caption }}
+                    </p>
+
+
+                    <div class="quote quote-right">
+                        ”
+                    </div>
+
+                </div>
+
+
+                <!-- REGENERATE -->
+
+                <form
+                    method="POST"
+                    action="/regenerate"
+                    class="regenerate-form">
+
+                    <input
+                        type="hidden"
+                        name="image_path"
+                        value="{{ image_path }}"
+                    >
+
+
+                    <button
+                        type="submit"
+                        class="regenerate-btn">
+
+                        <span class="regenerate-icon">
+                            ↻
+                        </span>
+
+                        Regenerate Caption
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- =================================================
+                 IMPROVE CAPTION
+            ================================================== -->
+
+            <div class="improve-card">
+
+
+                <div class="improve-icon">
+                    ✨
+                </div>
+
+
+                <div class="improve-content">
+
+                    <span class="section-label">
+                        STEP 03
+                    </span>
+
+
+                    <h2>
+                        Refine your caption
+                    </h2>
+
+
+                    <p>
+                        Add specific details, objects, places or
+                        words you'd like the caption to include.
+                    </p>
+
+
+                    <form
+                        method="POST"
+                        action="/improve">
+
+
+                        <input
+                            type="hidden"
+                            name="image_path"
+                            value="{{ image_path }}"
+                        >
+
+
+                        <input
+                            type="hidden"
+                            name="caption"
+                            value="{{ caption }}"
+                        >
+
+
+                        <div class="textarea-wrapper">
+
+                            <textarea
+                                name="details"
+                                id="details"
+                                maxlength="300"
+                                placeholder="Example: white cat, wooden table, sunny outdoor area..."
+                                required
+                            ></textarea>
+
+
+                            <span class="char-count">
+                                0 / 300
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="improve-btn">
+
+                            <span>
+                                ✦
+                            </span>
+
+                            Improve Caption
+
+                            <span class="improve-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer>
+
+            <div class="footer-line"></div>
+
+            <p>
+
+                Image Caption Generator
+
+                <span>•</span>
+
+                Made by Amit | Vivek | Mehul
+
+            </p>
+
+        </footer>
+
+    </main>
+
+
+    <script
+        src="{{ url_for('static', filename='js/script.js') }}">
+    </script>
 
 </body>
+
 </html>

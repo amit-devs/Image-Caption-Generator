@@ -1,5 +1,25 @@
+# Virtual environment
 venv/
+.venv/
+
+# Python cache
 __pycache__/
 *.pyc
+*.pyo
+
+# PyCharm
 .idea/
-static/uploads/*
+
+# Dataset
+dataset/
+
+# Uploaded images
+static/uploads/
+
+# Trained model files
+models/*.pth
+models/*.pkl
+
+# OS files
+.DS_Store
+Thumbs.db

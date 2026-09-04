@@ -1,4 +1,6 @@
 Flask
 torch
-transformers
+torchvision
 Pillow
+numpy
+nltk

@@ -1,41 +1,73 @@
 from flask import Flask, render_template, request
-from model import generate_caption
 import os
+
+from inference import generate_caption
+
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "static/uploads"
+
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-
-@app.route("/")
-def home():
-    return render_template("index.html")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-@app.route("/generate", methods=["POST"])
-def generate():
-    if "image" not in request.files:
-        return "No image uploaded"
+@app.route("/", methods=["GET", "POST"])
+def index():
 
-    image = request.files["image"]
+    caption = None
+    image_path = None
+    error = None
 
-    if image.filename == "":
-        return "No image selected"
+    if request.method == "POST":
 
-    image_path = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        image.filename
-    )
+        if "image" not in request.files:
+            error = "Please select an image."
 
-    image.save(image_path)
+            return render_template(
+                "index.html",
+                caption=caption,
+                image_path=image_path,
+                error=error
+            )
 
-    caption = generate_caption(image_path)
+        file = request.files["image"]
+
+        if file.filename == "":
+            error = "Please select an image."
+
+            return render_template(
+                "index.html",
+                caption=caption,
+                image_path=image_path,
+                error=error
+            )
+
+        # Save uploaded image
+        image_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            file.filename
+        )
+
+        file.save(image_path)
+
+        # Generate caption
+        try:
+
+            caption = generate_caption(
+                image_path
+            )
+
+        except Exception as e:
+
+            error = f"Error generating caption: {str(e)}"
 
     return render_template(
         "index.html",
         caption=caption,
-        image=image.filename
+        image_path=image_path,
+        error=error
     )
 
 
